@@ -32,12 +32,18 @@ has return_type => (
     is => 'ro',
 );
 
-sub encode {
+sub to_struct {
     my( $self, %args ) = @_;
 
-    my $struct = [ 0, $args{_id} || ++$Neovim::RPC::API::ID, $self->name, [ 
+    [ 0, $args{_id} || ++$Neovim::RPC::API::ID, $self->name, [ 
             map { $args{$_->[1] } } $self->parameters->@*
     ] ];
+
+}
+
+sub encode {
+    my $self = shift;
+    my $struct = @_ == 1 ? shift : $self->to_struct(@_);
 
     return Neovim::RPC::MessagePack::Encoder->new( struct => $struct );
 }

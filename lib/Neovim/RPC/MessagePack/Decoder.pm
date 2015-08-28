@@ -69,14 +69,13 @@ sub has_next {
 
         my $res = $self->gen_next->($byte);
         log_debug { $res };
-        print @{ $self->buffer} + 0, "\n";
 
         if( ref $res eq 'CODE' ) {
             $self->gen_next($res);
         }
         else {
             $self->next($res);
-            $self->clear_gen_next;
+            $self->gen_next( gen_new_value() );
             return 1;
         }
     }
@@ -139,7 +138,7 @@ sub gen_bin {
 
 sub gen_array {
     my $size_to_read = shift;
-    my $size;
+    my $size = 0;
     my @array;
     my $gen;
 

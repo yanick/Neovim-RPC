@@ -25,22 +25,17 @@ use Neovim::RPC;
 
 my $rpc = Neovim::RPC->new(
     port => 6666,
+    log_to_stderr => 1,
+    debug => 1,
 );
 
-$rpc->add_listener( 
-    'connect' => sub {
-        my $rpc = shift;
-        $rpc->api->vim_get_api_info(
-            callback => sub {
-                my( $rpc, $answer ) = @_;
-                use Data::Printer;
-                p $answer;
-            },
-        )
-    },
-);
+$rpc->api->vim_set_current_line( line => "victory!" )->on_done( sub {
+        my( $response ) = @_;
+        $rpc->api->vim_set_current_line( line => 'even better!' );
+});
 
-$rpc->start;
+
+$rpc->loop;
 
 __END__
 
