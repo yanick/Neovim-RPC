@@ -7,6 +7,10 @@ use warnings;
 
 use Moose;
 
+use List::AllUtils qw/ first first_index any /;
+
+use List::Gather;
+
 use experimental 'signatures', 'postderef';
 
 has buffer => (
@@ -21,8 +25,8 @@ has buffer => (
     },
 );
 
-after all => sub {
-    $_[0]->buffer([]);
+after all => sub($self) {
+    $self->buffer([]);
 };
 
 
@@ -35,20 +39,25 @@ has gen_next => (
 
 );
 
-sub read {
-    my $self = shift;
-    my @values = map { ord } map { split '' } @_;
+sub is_gen($val) { ref $val eq 'CODE' }
+
+sub read($self,@values) {
+
+    @values = map { ord } map { split '' } @values;
 
     my $gen = $self->gen_next;
 
-    for my $v ( @values ) {
-        $gen = $gen->($v);
+    $self->add_to_buffer($_) for gather {
+        for ( @values ) {
+            $gen = $gen->($_);
+            
+            next if is_gen($gen);
 
-        if( ref $gen ne 'CODE' ) {
-            $self->add_to_buffer($gen->[0]);
+            take $gen->[0];
+
             $gen = gen_new_value();
         }
-    }
+    };
 
     $self->gen_next($gen);
 }
@@ -58,54 +67,47 @@ use Type::Tiny;
 
 my $MessagePackGenerator  = Type::Tiny->new(
     parent => Ref,
-    name => 'MessagePackGenerator',
+    name   => 'MessagePackGenerator',
 );
 
 my @msgpack_types = (
-    [ PositiveFixInt => sub { $_ <= 0x7f }, \&gen_positive_fixint ],
-    [ FixArray => sub { $_ >= 0x90 and $_ <= 0x9f }, \&gen_fixarray ],
+    [ PositiveFixInt => [    0, 0x7f ], \&gen_positive_fixint ],
+    [ FixArray       => [ 0x90, 0x9f ], \&gen_fixarray ],
 );
 
-for my $t  ( @msgpack_types ) {
-    $MessagePackGenerator = $MessagePackGenerator->plus_coercions(
+$MessagePackGenerator = $MessagePackGenerator->plus_coercions(
+    map {
+        my( $min, $max ) = $_->[1]->@*;
         Type::Tiny->new(
-            parent => Int,
-            name => $t->[0],
-            constraint => $t->[1],
-        ) => $t->[2] ) 
-}
+            parent     => Int,
+            name       => $_->[0],
+            constraint => sub { $_ >= $min and $_ <= $max },
+        ) => $_->[2]  
+    } @msgpack_types
+);
 
 sub gen_new_value { 
-    sub { 
-        $MessagePackGenerator->assert_coerce(shift);
-    } 
+    sub ($byte) { $MessagePackGenerator->assert_coerce($byte); } 
 }
 
 sub gen_positive_fixint { [ $_ ] }
 
 sub gen_fixarray {
-    my $size  = $_ - 0x90;
+    gen_array( $_ - 0x90 );
+}
+
+sub gen_array($size) {
+
+    return [ [] ] unless $size;
+
     my @array;
-    my $gen;
 
-    return [ \@array ] if $size == 0;
+    @array = map { gen_new_value() } 1..$size;
 
-    sub {
-        my $byte = shift;
+    sub($byte) {
+        $_ = $_->($byte) for first { is_gen($_) } @array;
 
-        $gen ||= gen_new_value();
-
-        $gen = $gen->($byte);
-
-        if ( ref $gen ne 'CODE' ) { # got a new value
-
-            push @array, $gen->[0];
-            $gen = undef;
-
-            return [ \@array ] if @array == $size;
-        }
-
-        return __SUB__;
+        ( any { is_gen($_) } @array ) ? __SUB__ : [ \@array ];
     }
 }
 
