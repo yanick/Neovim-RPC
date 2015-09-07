@@ -34,12 +34,12 @@ my $FixStr = Type::Tiny->new(
 my $FixArray = Type::Tiny->new(
     parent => ArrayRef,
     name => 'FixArray',
-    constraints => sub { @$_ < 31 },
+    constraint => sub { @$_ < 31 },
 );
 
 
 my $MessagePack = Type::Tiny->new(
-    parent => InstanceOf['MessagePacked'],
+    parent => Ref,
     name => 'MessagePack',
 )->plus_coercions(
     $PositiveFixInt      ,=> \&encode_positive_fixint,

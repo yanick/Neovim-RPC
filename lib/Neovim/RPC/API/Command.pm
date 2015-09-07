@@ -19,9 +19,11 @@ has name => (
 );
 
 has parameters => (
+    traits => [ 'Array' ],
     isa => 'ArrayRef',
     is => 'ro',
     default => sub { [] },
+    handles => { all_parameters => 'elements' },
 );
 
 has receives_channel_id => (

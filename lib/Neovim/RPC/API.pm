@@ -1,5 +1,7 @@
 package Neovim::RPC::API;
 
+use 5.10.0;
+
 use strict;
 use warnings;
 
@@ -25,6 +27,16 @@ has commands => (
         all_commands => 'elements',
     },
 );
+
+sub print_commands {
+    my( $self ) = @_;
+
+    for my $c ( sort { $a->name cmp $b->name } $self->all_commands ) {
+        say $c->name, ' ( ', join( ', ', map { join ' ', @$_ } $c->all_parameters ) , ' ) -> ',
+            $c->return_type; 
+    }
+
+}
 
 sub has_command {
     my( $self, $command ) = @_;

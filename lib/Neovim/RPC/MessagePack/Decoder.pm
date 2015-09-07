@@ -83,6 +83,11 @@ sub has_next {
     return;
 }
 
+type MessagePackGenerator
+
+PositiveFixedInt, sub { ..condition.. }, sub { ..generator };
+    
+
 sub gen_new_value { 
     sub {
     my( $byte ) = @_;

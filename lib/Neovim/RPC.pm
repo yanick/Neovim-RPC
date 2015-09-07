@@ -6,7 +6,11 @@ use warnings;
 use Moose;
 use IO::Socket::INET;
 use Neovim::RPC::API::AutoDiscover;
+use Neovim::RPC::MessagePack::Decoder;
+use Neovim::RPC::Event;
 use Future;
+
+use experimental 'signatures';
 
 with 'Beam::Emitter';
 with 'MooseX::Role::Loggable' => {
@@ -77,6 +81,10 @@ sub add_reply_callback {
     $future;
 }
 
+before subscribe => sub($self,$event,@){
+    $self->api->vim_subscribe( event => $event );
+};
+
 sub loop {
     my $self = shift;
     my %args = @_;
@@ -94,6 +102,10 @@ sub loop {
                     
                     $callback->{future}->done( $next );
                 }
+            }
+            elsif( $next->[0] == 2 ) {
+                $self->log_debug( [ "it's a '%s' event", $next->[1] ] );
+                $self->emit( $next->[1], class => 'Neovim::RPC::Event', args => $next->[2] );     
             }
 
             return if $args{until} and $args{until}->();
