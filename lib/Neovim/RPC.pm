@@ -1,12 +1,14 @@
 package Neovim::RPC;
+# ABSTRACT: RPC client for Neovim
 
 use strict;
 use warnings;
 
 use Moose;
 use IO::Socket::INET;
+use MessagePack::RPC;
 use Neovim::RPC::API::AutoDiscover;
-use Neovim::RPC::MessagePack::Decoder;
+use MessagePack::Decoder;
 use Neovim::RPC::Event;
 use Future;
 
@@ -20,13 +22,20 @@ with 'MooseX::Role::Loggable' => {
 has "host" => (
     isa => 'Str',
     is => 'ro',
-    default => '127.0.0.1',
+    lazy => 1,
+    default => sub { ( split ':', $_[0]->nvim_listen_address )[0] },
+);
+
+has nvim_listen_address => (
+    is => 'ro',
+    default => sub { $ENV{NVIM_LISTEN_ADDRESS} },
 );
 
 has "port" => (
     isa => 'Int',
     is => 'ro',
-    required => 1,
+    lazy => 1,
+    default => sub { ( split ':', $_[0]->nvim_listen_address )[1] },
 );
 
 has "socket" => (
@@ -42,14 +51,14 @@ has "socket" => (
     },
 );
 
-has "decoder" => (
-    isa => 'Neovim::RPC::MessagePack::Decoder',
+has decoder => (
+    isa => 'MessagePack::Decoder',
     is => 'ro',
     lazy => 1,
     default => sub {
-        my $self = shift;
-
-        Neovim::RPC::MessagePack::Decoder->new;
+        MessagePack::Decoder->new(
+            logger => $_[0]->logger
+        );
     },
 );
 
@@ -85,27 +94,43 @@ before subscribe => sub($self,$event,@){
     $self->api->vim_subscribe( event => $event );
 };
 
+sub send($self,$struct) {
+    $self->log( [ "sending %s", $struct] );
+
+    my $encoded = MessagePack::Encoder->new(struct => $struct)->encoded;
+
+    $self->log_debug( [ "encoded: %s", $encoded ] );
+    $self->socket->send($encoded);
+}
+
 sub loop {
     my $self = shift;
     my %args = @_;
 
     while (read($self->socket, my $buf, 1)) {
-        $self->decoder->add_to_buffer($buf);
-        while( $self->decoder->has_next ) {
-            my $next = $self->decoder->get_next;
-            $self->log_debug( [ "receiving %s" , $next ]);
+        $self->decoder->read($buf);
+        while( $self->decoder->has_buffer ) {
+            my $next = $self->decoder->next;
+            $self->log( [ "receiving %s" , $next ]);
 
             if ( $next->[0] == 1 ) {
                 $self->log_debug( [ "it's a reply for %d", $next->[1] ] );
                 if( my $callback =  $self->reply_callbacks->{$next->[1]} ) {
-                    $DB::single = 1;
-                    
-                    $callback->{future}->done( $next );
+                    my $f = $callback->{future};
+                    $next->[2] 
+                        ? $f->fail($next->[2])
+                        : $f->done($next->[3])
+                        ;
                 }
             }
             elsif( $next->[0] == 2 ) {
                 $self->log_debug( [ "it's a '%s' event", $next->[1] ] );
                 $self->emit( $next->[1], class => 'Neovim::RPC::Event', args => $next->[2] );     
+            }
+            elsif( $next->[0] == 0 ) {
+                $self->log_debug( [ "it's a '%s' request", $next->[2] ] );
+                $self->emit( $next->[2], class => 'Neovim::RPC::Event', args => $next->[3],
+                    event_id => $next->[1] );     
             }
 
             return if $args{until} and $args{until}->();

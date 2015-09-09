@@ -18,7 +18,9 @@ sub BUILD {
     $self->vim_get_api_info->on_done(sub {
         my( $response ) = @_;
 
-        my @funcs = $response->[3][1]{'functions'}->@*;
+        $self->channel_id( $response->[0] );
+
+        my @funcs = $response->[1]{'functions'}->@*;
 
         for my $f ( @funcs ) {
             next if $self->has_command( $f->{name} );

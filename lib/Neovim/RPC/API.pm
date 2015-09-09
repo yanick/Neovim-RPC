@@ -7,6 +7,8 @@ use warnings;
 
 use Moose::Role;
 
+use Neovim::RPC::API::Command;
+
 use List::AllUtils qw/ any /;
 
 with 'MooseX::Role::Loggable';
@@ -15,6 +17,11 @@ has "rpc" => (
     isa => 'Neovim::RPC',
     is => 'ro',
     required => 1,
+);
+
+has channel_id => (
+    is => 'rw',
+    isa => 'Int',
 );
 
 has commands => (
@@ -57,8 +64,7 @@ sub add_command {
 
         my $future = $self->rpc->add_reply_callback( $struct->[1] );
 
-        $self->log( [ "sending %s", $struct] );
-        $self->rpc->socket->send($c->encode($struct));
+        $self->rpc->send($struct);
 
         $future;
     })

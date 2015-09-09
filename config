@@ -1,0 +1,5 @@
+
+
+rpcnotify(0, "nvimx_load_plugin", "PerlWeekly" )
+
+map <leader>pw :call PWGetInfo()<CR>

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Moose;
-use Neovim::RPC::MessagePack::Encoder;
+use MessagePack::Encoder;
 
 use experimental 'postderef';
 
@@ -47,7 +47,7 @@ sub encode {
     my $self = shift;
     my $struct = @_ == 1 ? shift : $self->to_struct(@_);
 
-    return Neovim::RPC::MessagePack::Encoder->new( struct => $struct );
+    return MessagePack::Encoder->new( struct => $struct );
 }
 
 1;
