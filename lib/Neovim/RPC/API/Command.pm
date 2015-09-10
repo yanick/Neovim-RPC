@@ -34,13 +34,10 @@ has return_type => (
     is => 'ro',
 );
 
-sub to_struct {
+sub args_to_struct {
     my( $self, %args ) = @_;
 
-    [ 0, $args{_id} || ++$Neovim::RPC::API::ID, $self->name, [ 
-            map { $args{$_->[1] } } $self->parameters->@*
-    ] ];
-
+    [ map { $args{$_->[1] } } $self->parameters->@* ]
 }
 
 sub encode {

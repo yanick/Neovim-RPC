@@ -60,13 +60,9 @@ sub add_command {
         shift;
         my %args = @_;
 
-        my $struct = $c->to_struct(%args);
+        my $struct = $c->args_to_struct(%args);
 
-        my $future = $self->rpc->add_reply_callback( $struct->[1] );
-
-        $self->rpc->send($struct);
-
-        $future;
+        $self->rpc->request( $c->name => $struct);
     })
 
 }

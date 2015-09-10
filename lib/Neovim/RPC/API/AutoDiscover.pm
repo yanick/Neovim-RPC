@@ -6,6 +6,8 @@ use warnings;
 use Moose;
 with 'Neovim::RPC::API';
 
+use Future;
+
 use experimental 'postderef';
 
 sub BUILD {
@@ -13,7 +15,7 @@ sub BUILD {
     
     $self->add_command({ name => 'vim_get_api_info' });
 
-    my $done;
+    my $done = Future->new;
 
     $self->vim_get_api_info->on_done(sub {
         my( $response ) = @_;
@@ -28,10 +30,12 @@ sub BUILD {
             $self->add_command( $f );
         }
 
-        $done = 1;
+        $self->vim_set_var( name => 'nvimx_channel', value => $self->channel_id );
+
+        $done->done;
     } );
 
-    $self->rpc->loop( until => sub { $done } );
+    $self->rpc->loop( $done );
 }
 
 1;
