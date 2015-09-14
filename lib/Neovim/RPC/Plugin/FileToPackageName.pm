@@ -22,12 +22,16 @@ sub BUILD {
     $self->subscribe( 'file_to_package_name', sub {
         my $msg = shift;
 
+        my $y = 
         $self->api->vim_call_function( fname => 'expand', args => [ '%:p' ] )
-        ->on_done( sub {
+        ->then( sub {
             $self->api->vim_set_current_line( line => 'package ' . file_to_package_name(shift) . ';' ) 
-                ->on_done(sub{
-                    $msg->response->done;
-                });
+        });
+
+        warn $y;
+
+        $y->on_done(sub{
+            $msg->response->done;
         });
 
     });

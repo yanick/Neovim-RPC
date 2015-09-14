@@ -29,7 +29,7 @@ sub _build_io {
         [ $in, $out ];
     };
 
-    $self->_set_io_accessors($io,'meh');
+    $self->_set_io_accessors($io);
     $io;
 }
 
