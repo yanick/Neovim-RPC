@@ -10,6 +10,8 @@ use lib 't/lib';
 use Test::Neovim qw/ $rpc /;
 use Test::More;
 
+plan skip_all => 'not ready';
+
 plan tests => 2;
 
 $rpc->api->vim_get_buffers->on_done(sub{
