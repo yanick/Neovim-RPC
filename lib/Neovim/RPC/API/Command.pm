@@ -4,9 +4,16 @@ use strict;
 use warnings;
 
 use Moose;
-use MessagePack::Encoder;
+use MsgPack::Encoder;
+use MsgPack::Type::Ext;
+
+use List::Util qw/ pairmap /;
 
 use experimental 'postderef';
+
+has api => (
+    is => 'ro',
+);
 
 has deferred => (
     is => 'ro',
@@ -37,14 +44,21 @@ has return_type => (
 sub args_to_struct {
     my( $self, %args ) = @_;
 
-    [ map { $args{$_->[1] } } $self->parameters->@* ]
+    [ 
+        pairmap {
+            my $type = $self->api->types->{$a};
+            defined $type
+                ? MsgPack::Type::Ext->new( type => $type, data => $b )
+                : $b
+        }
+        map { $_->[0] => $args{$_->[1]} } $self->parameters->@* ]
 }
 
 sub encode {
     my $self = shift;
     my $struct = @_ == 1 ? shift : $self->to_struct(@_);
 
-    return MessagePack::Encoder->new( struct => $struct );
+    return MsgPack::Encoder->new( struct => $struct );
 }
 
 1;

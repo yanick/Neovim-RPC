@@ -30,6 +30,10 @@ sub BUILD {
             $self->add_command( $f );
         }
 
+        while ( my ( $type, $val ) = each $response->[1]{'types'}->%* ) {
+            $self->types->{$type} = $val->{id};
+        }
+
         $self->vim_set_var( name => 'nvimx_channel', value => $self->channel_id );
 
         $done->done;

@@ -6,15 +6,15 @@ use warnings;
 
 use Moose;
 use IO::Socket::INET;
-use MessagePack::RPC;
+use MsgPack::RPC;
 use Neovim::RPC::API::AutoDiscover;
-use MessagePack::Decoder;
+use MsgPack::Decoder;
 use Future;
 use Class::Load qw/ load_class /;
 
 use experimental 'signatures';
 
-extends 'MessagePack::RPC';
+extends 'MsgPack::RPC';
 
 has '+io' => (
     builder => '_build_io'

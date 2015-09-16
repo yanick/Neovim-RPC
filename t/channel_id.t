@@ -5,12 +5,14 @@ use warnings;
 
 use Test::More;
 
-plan skip_all => 'no nvim listening' unless $ENV{NVIM_LISTEN_ADDRESS};
-
 use Neovim::RPC;
 use Future;
 
 use experimental 'signatures';
+
+plan skip_all => 'no nvim listening' unless $ENV{NVIM_LISTEN_ADDRESS};
+
+plan tests => 2;
 
 my $rpc = Neovim::RPC->new;
 

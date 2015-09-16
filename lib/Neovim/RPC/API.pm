@@ -35,6 +35,11 @@ has commands => (
     },
 );
 
+has types => (
+    is => 'ro',
+    default => sub{ {} },
+);
+
 sub print_commands {
     my( $self ) = @_;
 
@@ -52,6 +57,8 @@ sub has_command {
 
 sub add_command {
     my( $self, $command ) = @_;
+
+    $command->{api} = $self;
 
     my $c = Neovim::RPC::API::Command->new($command);
     $self->_push_command($c);
