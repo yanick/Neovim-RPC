@@ -28,10 +28,9 @@ sub BUILD {
             $self->api->vim_set_current_line( line => 'package ' . file_to_package_name(shift) . ';' ) 
         });
 
-        warn $y;
-
         $y->on_done(sub{
-            $msg->response->done;
+            $y; # to get around the silly 'weaken' bug
+            $msg->done;
         });
 
     });
