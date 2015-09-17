@@ -1,3 +1,4 @@
 MANIFEST.SKIP
 Neovim-RPC.*
 .build
+dist.ini
