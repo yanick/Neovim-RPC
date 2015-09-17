@@ -15,6 +15,7 @@ dist.ini
 doap.xml
 examples/channel.pl
 examples/load_plugins.pl
+examples/neovimx.pl
 examples/print_commands.pl
 examples/push-channel.pl
 examples/simple-1.pl
