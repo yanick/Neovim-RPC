@@ -29,7 +29,8 @@ sub BUILD {
         });
 
         $y->on_done(sub{
-            $y; # to get around the silly 'weaken' bug
+            my $z = $y; # to get around the silly 'weaken' bug
+            $z = "foo";
             $msg->done;
         });
 
