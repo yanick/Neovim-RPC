@@ -11,9 +11,9 @@ README
 README.mkdn
 SIGNATURE
 cpanfile
-dist.ini
 doap.xml
 examples/channel.pl
+examples/dsl.pl
 examples/load_plugins.pl
 examples/neovimx.pl
 examples/print_commands.pl

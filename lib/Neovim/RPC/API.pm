@@ -84,7 +84,7 @@ Exports all the api commands as functions in the current namespace.
 
 If C<$interactive> is set to C<true>, the function will also
 C<$rpc->loop()> until the response is received from the editor.
-The response promise will then be returned.
+The result of the response promise will then be returned (or, if there was a problem, the error message will be I<warn>ed).
 
     $rpc->api->export_dsl(1);
 
@@ -108,7 +108,7 @@ sub export_dsl {
                 my \$p =\$self->$name(\@_);
                 return unless \$interactive;
                 \$self->rpc->loop(\$p);
-                \$p;
+                \$p->is_done ? \$p->get : warn \$p->failure; 
             }
         !;
     }
