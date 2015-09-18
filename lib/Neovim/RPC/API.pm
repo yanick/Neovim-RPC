@@ -65,13 +65,54 @@ sub add_command {
 
     $self->meta->add_method( $c->name => sub {
         shift;
-        my %args = @_;
+        my @args = @_;
 
-        my $struct = $c->args_to_struct(%args);
+        my $struct = $c->args_to_struct(@args);
 
         $self->rpc->request( $c->name => $struct);
     })
 
+}
+
+=method export_dsl( $interactive )
+
+Exports all the api commands as functions in the current namespace. 
+
+    $rpc->api->export_dsl;
+
+    vim_set_current_line( "hello there!" );
+
+If C<$interactive> is set to C<true>, the function will also
+C<$rpc->loop()> until the response is received from the editor.
+The response promise will then be returned.
+
+    $rpc->api->export_dsl(1);
+
+    vim_get_current_line->on_done(
+        vim_set_current_line( scalar reverse shift );
+    );
+
+=cut
+
+sub export_dsl {
+    my $self = shift;
+    my $interactive = shift;
+
+    my $class = caller;
+
+    for my $command ( $self->all_commands ) {
+        my $name = $command->name;
+
+        eval qq! 
+            sub ${class}::$name { 
+                my \$p =\$self->$name(\@_);
+                return unless \$interactive;
+                \$self->rpc->loop(\$p);
+                \$p;
+            }
+        !;
+    }
+    
 }
 
 

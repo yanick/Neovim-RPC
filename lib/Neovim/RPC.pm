@@ -71,3 +71,15 @@ sub load_plugin ( $self, $plugin ) {
 }
 
 1;
+
+=head1 SEE ALSO
+
+=over
+
+=item L<http://neovim.io> - Neovim site
+
+=item L<http://techblog.babyl.ca/entry/neovim-way-to-go> - blog entry introducing Neovim-RPC to the world.
+
+=back
+
+=cut
