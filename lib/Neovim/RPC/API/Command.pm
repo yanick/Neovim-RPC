@@ -30,7 +30,10 @@ has parameters => (
     isa => 'ArrayRef',
     is => 'ro',
     default => sub { [] },
-    handles => { all_parameters => 'elements' },
+    handles => { 
+        all_parameters => 'elements',
+        num_parameters => 'count',
+    },
 );
 
 has receives_channel_id => (
@@ -42,7 +45,11 @@ has return_type => (
 );
 
 sub args_to_struct {
-    my( $self, %args ) = @_;
+    my( $self, @args ) = @_;
+
+
+    my $is_hash = @args == 2 * $self->num_parameters;
+    my %args = $is_hash ? @args : ();
 
     [ 
         pairmap {
@@ -51,7 +58,7 @@ sub args_to_struct {
                 ? MsgPack::Type::Ext->new( type => $type, data => $b )
                 : $b
         }
-        map { $_->[0] => $args{$_->[1]} } $self->parameters->@* ]
+        map { $_->[0] => $is_hash ? $args{$_->[1]} : shift @args } $self->all_parameters ]
 }
 
 sub encode {
