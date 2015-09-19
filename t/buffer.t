@@ -7,9 +7,11 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::Neovim qw/ $rpc /;
+#use Test::Neovim qw/ $rpc /;
+my $rpc;
 use Test::More;
 
+plan skip_all => 'not ready';
 plan tests => 2;
 
 $rpc->api->export_dsl(1);
