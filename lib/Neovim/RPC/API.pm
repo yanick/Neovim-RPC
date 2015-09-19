@@ -1,5 +1,6 @@
 package Neovim::RPC::API;
-
+our $AUTHORITY = 'cpan:YANICK';
+$Neovim::RPC::API::VERSION = '0.1.0';
 use 5.10.0;
 
 use strict;
@@ -74,25 +75,6 @@ sub add_command {
 
 }
 
-=method export_dsl( $interactive )
-
-Exports all the api commands as functions in the current namespace. 
-
-    $rpc->api->export_dsl;
-
-    vim_set_current_line( "hello there!" );
-
-If C<$interactive> is set to C<true>, the function will also
-C<$rpc->loop()> until the response is received from the editor.
-The result of the response promise will then be returned (or, if there was a problem, the error message will be I<warn>ed).
-
-    $rpc->api->export_dsl(1);
-
-    vim_get_current_line->on_done(
-        vim_set_current_line( scalar reverse shift );
-    );
-
-=cut
 
 sub export_dsl {
     my $self = shift;
@@ -118,5 +100,49 @@ sub export_dsl {
 
 1;
 
+__END__
 
+=pod
 
+=encoding UTF-8
+
+=head1 NAME
+
+Neovim::RPC::API
+
+=head1 VERSION
+
+version 0.1.0
+
+=head1 METHODS
+
+=head2 export_dsl( $interactive )
+
+Exports all the api commands as functions in the current namespace. 
+
+    $rpc->api->export_dsl;
+
+    vim_set_current_line( "hello there!" );
+
+If C<$interactive> is set to C<true>, the function will also
+C<$rpc->loop()> until the response is received from the editor.
+The result of the response promise will then be returned (or, if there was a problem, the error message will be I<warn>ed).
+
+    $rpc->api->export_dsl(1);
+
+    vim_get_current_line->on_done(
+        vim_set_current_line( scalar reverse shift );
+    );
+
+=head1 AUTHOR
+
+Yanick Champoux <yanick@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2015 by Yanick Champoux.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

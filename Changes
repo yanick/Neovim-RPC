@@ -1,18 +1,11 @@
 Revision history for Neovim-RPC
 
-{{$NEXT}}
-  [ API CHANGES ]
-
-  [ BUG FIXES ]
-
-  [ DOCUMENTATION ]
-
+0.1.0 2015-09-19
   [ ENHANCEMENTS ]
-  - Now able to export API as a DSL.
-
-  [ NEW FEATURES ]
+    - Now able to export API as a DSL.
 
   [ STATISTICS ]
+    - code churn: 8 files changed, 102 insertions(+), 13 deletions(-)
 
 0.0.1 2015-09-16
   - First version, unleashed on an unsuspecting world.
