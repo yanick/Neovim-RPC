@@ -7,7 +7,6 @@ MANIFEST
 META.json
 META.yml
 Makefile.PL
-README
 README.mkdn
 SIGNATURE
 cpanfile
@@ -33,4 +32,5 @@ t/buffer.t
 t/lib/Test/Neovim.pm
 t/testrunner.t
 t/tests/TestsFor/Neovim/RPC.pm
+taskwarrior/taskw.pl
 xt/release/unused-vars.t
