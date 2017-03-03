@@ -1,6 +1,7 @@
 package Neovim::RPC;
+our $AUTHORITY = 'cpan:YANICK';
 # ABSTRACT: RPC client for Neovim
-
+$Neovim::RPC::VERSION = '0.2.0';
 use strict;
 use warnings;
 
@@ -70,6 +71,20 @@ sub load_plugin ( $self, $plugin ) {
 
 1;
 
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Neovim::RPC - RPC client for Neovim
+
+=head1 VERSION
+
+version 0.2.0
+
 =head1 SEE ALSO
 
 =over
@@ -79,5 +94,16 @@ sub load_plugin ( $self, $plugin ) {
 =item L<http://techblog.babyl.ca/entry/neovim-way-to-go> - blog entry introducing Neovim-RPC to the world.
 
 =back
+
+=head1 AUTHOR
+
+Yanick Champoux <yanick@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2015 by Yanick Champoux.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut

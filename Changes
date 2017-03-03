@@ -1,18 +1,11 @@
 Revision history for Neovim-RPC
 
-{{$NEXT}}
-  [ API CHANGES ]
-
-  [ BUG FIXES ]
-
-  [ DOCUMENTATION ]
-
+0.2.0 2017-03-02
   [ ENHANCEMENTS ]
-  - Switch from Future to Promises for promise stuff.
-
-  [ NEW FEATURES ]
+    - Switch from Future to Promises for promise stuff.
 
   [ STATISTICS ]
+    - code churn: 12 files changed, 280 insertions(+), 21 deletions(-)
 
 0.1.0 2015-09-19
   [ ENHANCEMENTS ]
