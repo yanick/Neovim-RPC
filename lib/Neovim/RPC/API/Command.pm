@@ -55,7 +55,7 @@ sub args_to_struct {
         pairmap {
             my $type = $self->api->types->{$a};
             defined $type
-                ? MsgPack::Type::Ext->new( type => $type, data => $b )
+                ? MsgPack::Type::Ext->new( type => $type, data => $b )->data
                 : $b
         }
         map { $_->[0] => $is_hash ? $args{$_->[1]} : shift @args } $self->all_parameters ]

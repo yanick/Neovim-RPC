@@ -6,7 +6,7 @@ use warnings;
 use Test::Class::Moose;
 
 use Neovim::RPC;
-use Future;
+use Promises qw/ deferred /;
 
 use experimental 'signatures';
 
@@ -31,7 +31,7 @@ sub test_startup {
 }
 
 sub test_setup($self,@) {
-    $self->_loop_end( Future->new );
+    $self->_loop_end( deferred );
 }
 
 sub end_loop {

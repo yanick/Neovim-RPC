@@ -20,7 +20,7 @@ my $rpc = Neovim::RPC->new(
 });
 
 $rpc->api->vim_set_current_line( line => "victory!" )
-    ->on_done( sub {
+    ->then( sub {
         my( $response ) = @_;
         $rpc->api->vim_set_current_line( line => 'even better!' );
     });

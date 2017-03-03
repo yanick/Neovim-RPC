@@ -6,7 +6,7 @@ use warnings;
 use Moose;
 with 'Neovim::RPC::API';
 
-use Future;
+use Promises qw/ deferred /;
 
 use experimental 'postderef';
 
@@ -15,9 +15,9 @@ sub BUILD {
     
     $self->add_command({ name => 'vim_get_api_info' });
 
-    my $done = Future->new;
+    my $promise = deferred;
 
-    $self->vim_get_api_info->on_done(sub {
+    $self->vim_get_api_info->done(sub {
         my( $response ) = @_;
 
         $self->channel_id( $response->[0] );
@@ -36,10 +36,10 @@ sub BUILD {
 
         $self->vim_set_var( name => 'nvimx_channel', value => $self->channel_id );
 
-        $done->done;
+        $promise->resolve;
     } );
 
-    $self->rpc->loop( $done );
+    $self->rpc->loop( $promise );
 }
 
 1;

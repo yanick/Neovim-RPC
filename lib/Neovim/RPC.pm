@@ -9,7 +9,6 @@ use IO::Socket::INET;
 use MsgPack::RPC;
 use Neovim::RPC::API::AutoDiscover;
 use MsgPack::Decoder;
-use Future;
 use Class::Load qw/ load_class /;
 
 use experimental 'signatures';
@@ -28,7 +27,6 @@ sub _build_io {
         open my $out, '>', '-';
         [ $in, $out ];
     };
-
     $self->_set_io_accessors($io);
     $io;
 }
