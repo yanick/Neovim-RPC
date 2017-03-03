@@ -8,6 +8,7 @@ Revision history for Neovim-RPC
   [ DOCUMENTATION ]
 
   [ ENHANCEMENTS ]
+  - Switch from Future to Promises for promise stuff.
 
   [ NEW FEATURES ]
 
