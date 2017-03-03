@@ -50,7 +50,7 @@ sub test_get_set_current_line($self,@) {
     $self->api->vim_set_current_line( line => $string )
         ->on_done(sub{
             pass 'line set';
-            $self->api->vim_get_current_line->on_done(sub{
+            $self->api->vim_get_current_line->then(sub{
                 is shift(@_) => $string, 'get it back';
                 $self->end_loop;
             });;
@@ -66,7 +66,7 @@ sub test_channel($self,@) {
     
     ok $id => 'we have a channel id';
 
-    $self->api->vim_get_var( name => 'nvimx_channel' )->on_done(sub{
+    $self->api->vim_get_var( name => 'nvimx_channel' )->then(sub{
         is shift(@_) => $id, 'available nvim-side too';
         $self->end_loop;
     });
