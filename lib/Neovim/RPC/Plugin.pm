@@ -176,13 +176,10 @@ has rpc => (
 );
 
 sub register($self) {
-}
-
-before register => sub($self) {
     while( my( $event, $chain ) = each $self->subscriptions->%* ) {
         $self->rpc->subscribe( $event => $self->expand_subscription_chain(@$chain) );
     }
-};
+}
 
 sub expand_subscription_chain($self,@chain) {
     return sub($event) {
