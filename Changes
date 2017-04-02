@@ -2,12 +2,15 @@ Revision history for Neovim-RPC
 
 {{$NEXT}}
   [ API CHANGES ]
+  - Overhaul of the plugins architecture.
 
   [ BUG FIXES ]
 
   [ DOCUMENTATION ]
 
   [ ENHANCEMENTS ]
+  - add 'nvimx.pl' utility script.
+  - add example using Reply for interactive sessions.
 
   [ NEW FEATURES ]
 
