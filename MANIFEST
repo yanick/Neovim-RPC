@@ -9,6 +9,8 @@ META.yml
 Makefile.PL
 README.mkdn
 SIGNATURE
+bin/nvimx.pl
+contrib/init.vim
 cpanfile
 doap.xml
 examples/channel.pl
@@ -17,6 +19,7 @@ examples/load_plugins.pl
 examples/neovimx.pl
 examples/print_commands.pl
 examples/push-channel.pl
+examples/reply.pl
 examples/simple-1.pl
 lib/Neovim/RPC.pm
 lib/Neovim/RPC/API.pm
