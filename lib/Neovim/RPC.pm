@@ -52,12 +52,10 @@ before subscribe => sub($self,$event,@){
 };
 
 has plugins => (
-    traits => [ 'Array' ],
-    isa => 'ArrayRef',
-    default => sub { [] },
-    handles => {
-        _push_plugin => 'push',
-    },
+    is => 'ro',
+    traits => [ 'Hash' ],
+    isa => 'HashRef',
+    default => sub { +{} },
 );
 
 # TODO make that a coerced type
@@ -65,9 +63,9 @@ has plugins => (
 # TODO switch load_class for use_module
 sub load_plugin ( $self, $plugin ) { 
     my $class = 'Neovim::RPC::Plugin::' . $plugin;
-    $self->_push_plugin(
-        load_class($class)->new( rpc => $self )
-    );
+
+    return $self->plugins->{$plugin} ||=
+        load_class($class)->new( rpc => $self );
 }
 
 1;
