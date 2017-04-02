@@ -5,28 +5,38 @@ use 5.20.0;
 use strict;
 use warnings;
 
-use Moose;
-with 'Neovim::RPC::Plugin';
+use Neovim::RPC::Plugin;
 
 use Try::Tiny;
 
 use experimental 'signatures';
 
-sub BUILD($self,@) {
+use Promises qw/ deferred collect /;
 
-    $self->subscribe('load_plugin',sub ($msg) { 
-        # TODO also deal with it as a request?
-        my $plugin = $msg->args->[0];
-        try {
-            $self->rpc->load_plugin( $plugin );           
-        }
-        catch {
-            $self->api->vim_report_error( str => "failed to load $plugin" );
-        }
-    });
+subscribe load_plugin => sub($self,$event) {
+    collect(
+        map { $self->_load_plugin($_) } $event->all_args
+    );
+};
+
+subscribe plugins_loaded => sub($self,$event) {
+    my $plugins = join "\n", 
+       keys %{ $self->rpc->plugins };
+
+    $self->rpc->api->vim_command( qq{echo "plugins:\n $plugins"} );
+};
+
+sub _load_plugin( $self, $plugin ) {
+    my $promise = deferred;
+    $promise->resolve;
+
+    $promise
+        ->then(sub{ $self->rpc->load_plugin($plugin) })
+        ->catch(sub{
+            $self->api->vim_report_error( str => 
+                "failed to load NeovimX plugin '$plugin': @_" 
+            );
+        });
 }
 
-
 1;
-
-
