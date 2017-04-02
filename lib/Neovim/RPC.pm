@@ -61,6 +61,8 @@ has plugins => (
 );
 
 # TODO make that a coerced type
+# TODO can load an object directly
+# TODO switch load_class for use_module
 sub load_plugin ( $self, $plugin ) { 
     my $class = 'Neovim::RPC::Plugin::' . $plugin;
     $self->_push_plugin(
