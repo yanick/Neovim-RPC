@@ -13,17 +13,26 @@ use experimental 'signatures';
 
 use Promises qw/ deferred collect /;
 
-subscribe load_plugin => sub($self,$event) {
+sub BUILD ($self,@) {
+    $self->api->ready->then(sub{
+        $self->api->nvim_get_var('nvimx_plugins')->then(sub{
+            $self->_load_plugin($_) for keys %{ $_[0] };
+        });
+    });
+}
+
+subscribe load_plugin => rpcrequest sub($self,$event) {
     collect(
-        map { $self->_load_plugin($_) } $event->all_args
-    );
+        map { $self->_load_plugin($_) } $event->all_params
+    )->catch(sub{ warn shift });
 };
 
 subscribe plugins_loaded => sub($self,$event) {
     my $plugins = join "\n", 
        keys %{ $self->rpc->plugins };
 
-    $self->rpc->api->vim_command( qq{echo "plugins:\n $plugins"} );
+    $self->rpc->api->vim_command( qq{echo "plugins:\n$plugins"} );
+    $self->rpc->api->vim_command( qq{echo "plugins:\n} . $INC{'Neovim/RPC/Plugin/FlipOperator.pm'} );
 };
 
 sub _load_plugin( $self, $plugin ) {

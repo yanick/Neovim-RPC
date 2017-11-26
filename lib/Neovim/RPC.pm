@@ -27,8 +27,19 @@ sub _build_io {
         open my $out, '>', '-';
         [ $in, $out ];
     };
-    $self->_set_io_accessors($io);
+    $self->_set_io_accessors($self->io);
     $io;
+}
+
+# sub BUILD { my $self = shift; $self->_set_io_accessors($self->io) if $self->io }
+
+sub BUILD {
+    my $self = shift;
+    $self->api->ready->done(sub {
+        $self->subscribe( 'nvimx_stop', sub {
+            $self->loop->stop;
+        });
+    })
 }
 
 has "api" => (
@@ -36,12 +47,12 @@ has "api" => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        Neovim::RPC::API::AutoDiscover->new( rpc => $self, logger => $self->logger );      
+        Neovim::RPC::API::AutoDiscover->new( rpc => $self );      
     },
 );
 
 before subscribe => sub($self,$event,@){
-    $self->api->vim_subscribe( event => $event );
+    $self->api->ready->done( sub{ $self->api->vim_subscribe( event => $event ) });
 };
 
 0 and around emit_request => sub {
