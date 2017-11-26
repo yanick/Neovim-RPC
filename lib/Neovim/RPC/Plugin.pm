@@ -225,7 +225,6 @@ sub init_meta {
     shift;
     
     my $meta = Moose->init_meta(@_);
-    my $module = $meta->name;
 
     apply_all_roles( $meta->name, __PACKAGE__ );
     
