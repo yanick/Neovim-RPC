@@ -1,22 +1,11 @@
 package Neovim::RPC::Plugin::FlipOperator;
-
+our $AUTHORITY = 'cpan:YANICK';
+$Neovim::RPC::Plugin::FlipOperator::VERSION = '1.0.0';
 use 5.20.0;
 
 use strict;
 use warnings;
 
-=head1 SYNOPSIS
-
-in F<init.vim>
-
-    function! Perl_flipOperator() range
-        call rpcrequest( g:nvimx_channel, 'flip_operator', a:firstline, a:lastline, getline( a:firstline, a:lastline ) )
-    endfunction
-
-    au FileType perl map  <buffer> <leader>fo (v):call Perl_flipOperator()<CR>
-    au FileType perl vmap <buffer> <leader>fo :call Perl_flipOperator()<CR>
-
-=cut
 
 use Neovim::RPC::Plugin;
 
@@ -113,3 +102,41 @@ sub block_to_postifx {
 }
 
 1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Neovim::RPC::Plugin::FlipOperator
+
+=head1 VERSION
+
+version 1.0.0
+
+=head1 SYNOPSIS
+
+in F<init.vim>
+
+    function! Perl_flipOperator() range
+        call rpcrequest( g:nvimx_channel, 'flip_operator', a:firstline, a:lastline, getline( a:firstline, a:lastline ) )
+    endfunction
+
+    au FileType perl map  <buffer> <leader>fo (v):call Perl_flipOperator()<CR>
+    au FileType perl vmap <buffer> <leader>fo :call Perl_flipOperator()<CR>
+
+=head1 AUTHOR
+
+Yanick Champoux <yanick@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2017, 2015 by Yanick Champoux.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
