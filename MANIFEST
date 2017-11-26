@@ -21,12 +21,15 @@ examples/print_commands.pl
 examples/push-channel.pl
 examples/reply.pl
 examples/simple-1.pl
+flip_operator/aliases.vim
 lib/Neovim/RPC.pm
 lib/Neovim/RPC/API.pm
 lib/Neovim/RPC/API/AutoDiscover.pm
 lib/Neovim/RPC/API/Command.pm
 lib/Neovim/RPC/Plugin.pm
+lib/Neovim/RPC/Plugin/Echo.pm
 lib/Neovim/RPC/Plugin/FileToPackageName.pm
+lib/Neovim/RPC/Plugin/FlipOperator.pm
 lib/Neovim/RPC/Plugin/LoadPlugin.pm
 t/00-compile.t
 t/00-report-prereqs.dd
