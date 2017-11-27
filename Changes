@@ -4,6 +4,7 @@ Revision history for Neovim-RPC
   [ API CHANGES ]
 
   [ BUG FIXES ]
+  - Need Promises +v0.98. (GH#4, Slaven Rezić)
 
   [ DOCUMENTATION ]
 
